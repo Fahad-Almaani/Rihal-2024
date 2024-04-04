@@ -1,0 +1,5 @@
+Register new user:   /auth/users
+login:               /auth/jwt/create
+
+
+Search for movies:   /movies/search/?search=mad

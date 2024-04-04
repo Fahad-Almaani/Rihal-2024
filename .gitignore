@@ -1,0 +1,5 @@
+/djEnv
+db.sqlite3
+/memory_photos
+core/migrations/
+movies/migrations/

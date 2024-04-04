@@ -1,21 +1,20 @@
 from django.apps import AppConfig
-# from django.db.models.signals import post_migrate
-# from django.dispatch import receiver
-# from .management.commands import load_movies
 from django.conf import settings
 import os
-# from django.core.management import call_command
+
+from django.db.models.signals import post_migrate
+
+def load_movies(sender, **kwargs):
+    from .models import Movie
+    if sender.name == 'movies' and not Movie.objects.exists():
+        json_file_path = os.path.join(settings.BASE_DIR, 'movies', 'movies_data', 'movies.json')
+        from django.core.management import call_command
+        call_command('load_movies', json_file_path)
 
 class MoviesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'movies'
 
-    # def ready(self):
-    #     from django.core.management import call_command
-    #     json_file_path = os.path.join(settings.BASE_DIR, 'movies', 'movies_data', 'movies.json')
-    #     call_command('load_movies', json_file_path)
-    # @receiver(post_migrate)
-    # def load_movies_after_migration(sender, **kwargs):
-    #     """Loads movies from JSON after database migrations are applied."""
-    #     json_file_path = os.path.join(settings.BASE_DIR, 'movies', 'movies_data', 'movies.json')
-    #     call_command('load_movies', json_file_path)
+    def ready(self):
+        post_migrate.connect(load_movies, sender=self)
+  
