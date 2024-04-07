@@ -98,7 +98,7 @@ class MovieDetailAPIView(APIView):
 class MovieSearchAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
+    serializer_class = MoviesSerializerSimple
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'description']
 
@@ -113,8 +113,8 @@ class TopRatedMoviesAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        
-        return Response(serializer.data)
+        data = [{'name': item['name'], 'description': item['description'],'my_rating':item["my_rating"]} for item in serializer.data]
+        return Response(data)
     
 
 class CreateMemoryAPIView(generics.CreateAPIView):
@@ -345,4 +345,19 @@ class MinimumStarsAPIView(APIView):
 
         return Response({'minimum_stars': min_stars})
     
-#1,2,3,5,15
+
+
+# class MemoryAddPhotoAPIView(generics.UpdateAPIView):
+#     queryset = Memory.objects.all()
+#     serializer_class = MemoryUpdatePhotosSerializer
+
+#     def patch(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance, data=request.data, partial=True)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
+
+# class UpdateMemoryPhotosAPIView(generics.UpdateAPIView):
+#     queryset = Memory.objects.all()
+#     serializer_class = PhotoSerializer

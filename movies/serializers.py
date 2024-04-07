@@ -29,6 +29,10 @@ class MovieRatingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Rating must be between 1 and 10')
         return attrs
     
+class MoviesSerializerSimple(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ['id', 'name', 'description']
 
 class MoviesSerializerWithRating(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()
@@ -95,31 +99,112 @@ class CreateMemorySerializer(serializers.ModelSerializer):
 class MemoryDetailSerializer(serializers.ModelSerializer):
     movie_id = serializers.ReadOnlyField(source='movie.id')
     movie_name = serializers.ReadOnlyField(source='movie.name')
-    photo_id = serializers.ReadOnlyField(source='photos.id')
-    photo_name = serializers.ReadOnlyField(source='photos.name')
+    # photo_id = serializers.ReadOnlyField(source='photos.id', allow_null=True)
+    photo_name = serializers.ReadOnlyField(source='photos.name', allow_null=True)
     photo_extension = serializers.SerializerMethodField()
     photo_size = serializers.SerializerMethodField()
-    photo_time_created = serializers.ReadOnlyField(source='photos.created_at')
-
+    # time_created = serializers.ReadOnlyField(source='memory.time_created', allow_null=True)
     class Meta:
         model = Memory
-        fields = ['id', 'movie_id', 'movie_name', 'title', 'story', 'photo_id', 'photo_name', 'photo_extension', 'photo_size', 'photo_time_created']
+        fields = ['id', 'movie_id', 'movie_name', 'title', 'story', 'photo_name', 'photo_extension', 'photo_size', 'time_created']
 
     def get_photo_extension(self, obj):
-        return obj.photos.name.split('.')[-1] if obj.photos.name else ''
+        photos = obj.photos
+        if photos:
+            return photos.name.split('.')[-1]
+        return ''
 
     def get_photo_size(self, obj):
-        size = obj.photos.size
-        if size == 0:
-            return "0B"
-        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-        i = int(math.floor(math.log(size, 1024)))
-        p = math.pow(1024, i)
-        s = round(size / p, 2)
-        return "%s%s" % (s, size_name[i])
+        photos = obj.photos
+        if photos:
+            size = photos.size
+            if size == 0:
+                return "0B"
+            size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+            i = int(math.floor(math.log(size, 1024)))
+            p = math.pow(1024, i)
+            s = round(size / p, 2)
+            return "%s%s" % (s, size_name[i])
+        return ''
     
 
 class UpdateMemorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Memory
         fields = ['title', 'story']
+
+
+
+
+# class PhotoDetailsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Photo
+#         fields = ['id', 'name', 'extension', 'size', 'time_created']
+
+#     def get_photo_size(self, obj):
+#         size = obj.size
+#         if size == 0:
+#             return "0KB"
+#         size_in_kb = round(size / 1024, 2)  # Convert bytes to kilobytes
+#         return "%sKB" % size_in_kb
+    
+# class MemoryDetailSerializer(serializers.ModelSerializer):
+#     movie_id = serializers.ReadOnlyField(source='movie.id')
+#     movie_name = serializers.ReadOnlyField(source='movie.name')
+#     photos = PhotoDetailsSerializer(many=True, read_only=True)
+
+#     class Meta:
+#         model = Memory
+#         fields = ['id', 'movie_id', 'movie_name', 'title', 'story', 'photos']
+
+# class PhotoSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Photo
+#         fields = ['id', 'image']
+
+# class MemoryCreateSerializer(serializers.ModelSerializer):
+#     photos = PhotoSerializer(many=True, required=False)
+
+#     class Meta:
+#         model = Memory
+#         fields = [ 'movie', 'title', 'date', 'story', 'photos']
+
+#     def create(self, validated_data):
+#         photos_data = validated_data.pop('photos', [])
+#         memory = Memory.objects.create(**validated_data)
+#         for photo_data in photos_data:
+#             Photo.objects.create(memory=memory, **photo_data)
+#         return memory
+    
+
+
+# class MemoryUpdatePhotosSerializer(serializers.ModelSerializer):
+#     photos = PhotoSerializer(many=True, required=False)
+
+#     class Meta:
+#         model = Memory
+#         fields = ['photos']
+
+#     def update(self, instance, validated_data):
+#         photos_data = validated_data.pop('photos', [])
+#         for photo_data in photos_data:
+#             Photo.objects.create(memory=instance, **photo_data)
+#         return instance
+# class PhotoSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Photo
+#         fields = ['image']
+
+# class MemoryCreateSerializer(serializers.ModelSerializer):
+#     photos = PhotoSerializer(many=True, required=False)
+
+#     class Meta:
+#         model = Memory
+#         fields = [ 'movie', 'title', 'date', 'story', 'photos']
+
+#     def create(self, validated_data):
+#         photos_data = validated_data.pop('photos', [])
+#         memory = Memory.objects.create(**validated_data)
+#         for photo_data in photos_data:
+#             Photo.objects.create(memory=memory, **photo_data).save()
+#         return memory

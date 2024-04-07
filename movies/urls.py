@@ -8,7 +8,7 @@ urlpatterns = [
     path('<int:movie_pk>/details/',MovieDetailAPIView.as_view()),
     path('movies/search/', MovieSearchAPIView.as_view(), name='movie_search'),
     path('top-rated-movies/', TopRatedMoviesAPIView.as_view(), name='top_rated_movies'),
-    path('movie/compare',CompareRatingsAPIView.as_view()),
+    path('rating/compare',CompareRatingsAPIView.as_view()),
 
     path('memory/create-memory/', CreateMemoryAPIView.as_view(), name='create_memory'),
     path('memory/my-memories/', MyMemoriesAPIView.as_view(), name='my_memories'),
@@ -16,6 +16,7 @@ urlpatterns = [
     path('memory/<int:memory_id>/photo/', MemoryPhotoAPIView.as_view(), name='memory_photo'),
     path('memory/update/<int:pk>/', UpdateMemoryAPIView.as_view(), name='update_memory'),
     path('memory/delete/<int:pk>/', DeleteMemoryAPIView.as_view(), name='delete_memory'),
+    #  path('memory/<int:pk>/add-photo/', UpdateMemoryPhotosAPIView.as_view(), name='memory-add-photo'),
 
     path('memory/top-words/', TopWordsAPIView.as_view(),name='top_words'),
     path('memory/<int:memory_id>/urls',ExtractURLsAPIView.as_view(),name='extract_urls'),
