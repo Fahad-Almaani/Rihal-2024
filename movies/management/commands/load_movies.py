@@ -1,6 +1,5 @@
 import json
 import requests
-import datetime
 from django.core.management.base import BaseCommand
 from ...models import Movie
 from ...serializers import MovieSerializer
@@ -31,7 +30,6 @@ class Command(BaseCommand):
                 except:
                     return None
            
-
             # Check if movie ID exists
             if movie_id:
                 try:

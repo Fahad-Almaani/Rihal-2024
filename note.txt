@@ -1,0 +1,4 @@
+done ---step 7 error return all the movies 
+
+step 8 avg rating is wrong should be my rating
+step 13 error requre to update both while i shuld be optoinal

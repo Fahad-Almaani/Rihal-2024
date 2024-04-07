@@ -21,6 +21,7 @@ urlpatterns = [
     path('memory/<int:memory_id>/urls',ExtractURLsAPIView.as_view(),name='extract_urls'),
 
     path('guess-movie/', GuessMovieAPIView.as_view(), name='guess_movie'),
+    path('min-stars/', MinimumStarsAPIView.as_view(), name='minimum_stars'),
 ]
 
 

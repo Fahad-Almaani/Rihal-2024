@@ -12,6 +12,8 @@ class MovieSerializer(serializers.ModelSerializer):
         model = Movie
         fields = '__all__'  # Include all fields by default
 
+
+
 class MovieRatingSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(min_value=1, max_value=10)
 

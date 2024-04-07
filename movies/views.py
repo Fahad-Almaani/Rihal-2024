@@ -105,7 +105,7 @@ class MovieSearchAPIView(generics.ListAPIView):
 
 class TopRatedMoviesAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = MovieSerializer
+    serializer_class = MovieDetailSerializer
 
     def get_queryset(self):
         return Movie.objects.annotate(avg_rating=Avg('movierating__rating')).order_by('-avg_rating')[:5]
@@ -113,6 +113,7 @@ class TopRatedMoviesAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
+        
         return Response(serializer.data)
     
 
@@ -300,3 +301,48 @@ class CompareRatingsAPIView(APIView):
             })
 
         return Response(movie_ratings)
+    
+
+class MinimumStarsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get_ratings_for_movies(self, movie_ids, user):
+        ratings = MovieRating.objects.filter(user=user, movie_id__in=movie_ids)
+        # Create a dictionary to store ratings for each movie ID
+        rating_dict = {rating.movie_id: rating.rating for rating in ratings}
+        # Retrieve ratings in the same order as movie_ids
+        return [rating_dict.get(movie_id, 0) for movie_id in movie_ids]
+
+    def get_minimum_stars(self,movie_ratings):
+        n = len(movie_ratings)
+        stars = [1] * n
+
+        # Ensure each movie has at least one star
+        for i in range(1, n):
+            if movie_ratings[i] > movie_ratings[i - 1]:
+                stars[i] = stars[i - 1] + 1
+
+        # Traverse from right to left, ensuring higher-rated movies get more stars
+        for i in range(n - 2, -1, -1):
+            if movie_ratings[i] > movie_ratings[i + 1]:
+                stars[i] = max(stars[i], stars[i + 1] + 1)
+
+        return sum(stars)
+
+    def post(self, request, *args, **kwargs):
+        movie_ids = request.data.get('movie_ids', [])
+        if not movie_ids:
+            return Response({'error': 'Please provide movie IDs in the request body.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Retrieve ratings for the provided movie IDs
+        ratings = self.get_ratings_for_movies(movie_ids, user)
+        print(ratings)
+        # Calculate the minimum stars required
+        min_stars = self.get_minimum_stars(ratings)
+
+        return Response({'minimum_stars': min_stars})
+    
+#1,2,3,5,15
