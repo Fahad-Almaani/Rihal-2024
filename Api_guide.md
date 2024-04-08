@@ -1,22 +1,3 @@
-### This project build with:
-
-    - Python 3.10.11
-    - Django 5.0.3
-
-# How to Run
-
-    1 - Configure Python Environment
-    2 - Install requirements.txt `pip install -r requirements.txt`
-    3 - Run makemigrations `python .\manage.py makemigrations`
-    4 - Run migration `python .\manage.py migrate` Note: In this step all the data from `https://cinema.stag.rihal.tech/` will be add to the database if it is not already exist
-
-## Now the Server is running on port `8000`
-
-    - First Register a username and password with this Url `/auth/users`
-    - Next Login with this url `/auth/jwt/create` It will return access Token and refresh token you only need the access token
-    - Now each time you try to access the other endpoints you need to add the access token as barer token with barer as prefix like this `Authorization: Bearer <token>`
-
-### API Endpoints
 
 | Name              | URL                              | params and body                         |
 | ----------------- | -------------------------------- | --------------------------------------- |
