@@ -14,7 +14,7 @@
 
     - First Register a username and password with this Url `/auth/users`
     - Next Login with this url `/auth/jwt/create` It will return access Token and refresh token you only need the access token
-    - Now each time you try to access the other endpoints you need to add the access token as Bearer token with Bearer as prefix like this `Authorization: Bearer <token>`
+    - Now each time you try to access the other endpoints you need to add the access token in the headers of the request as Bearer token with Bearer as prefix like this `Authorization: Bearer <token>`
 
 ### API Endpoints
 
