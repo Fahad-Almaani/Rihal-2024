@@ -2,6 +2,7 @@
 
     - Python 3.10.11
     - Django 5.0.3
+    - database Elephantsql
 
 # How to Run
 
